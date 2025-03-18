@@ -28,7 +28,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
-    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
+//    developmentOnly 'org.springframework.boot:spring-boot-docker-compose'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -53,9 +53,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.17.12'
 
-    // dotenv
-    implementation 'io.github.cdimascio:java-dotenv:5.2.2'
-
     // redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
@@ -63,6 +60,53 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.17.2'
 }
 
+
 tasks.named('test') {
     useJUnitPlatform()
+}
+
+def reactDir = "$projectDir/src/main/react" // 리액트 디렉토리
+
+sourceSets { // 리액트 디렉토리를 리소스 디렉토리로 설정
+    main {
+        resources {
+            srcDirs = ["$projectDir/src/main/resources"]
+        }
+    }
+}
+
+processResources { dependsOn "copyReactBuildFiles" } // 리액트 빌드 파일들을 복사해준다.
+
+tasks.register('installReact', Exec) { // 리액트 설치
+    workingDir "$reactDir"
+    inputs.dir "$reactDir"
+    group = BasePlugin.BUILD_GROUP
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) { // 윈도우일 경우
+        commandLine "yarn.cmd", "audit", "fix"
+        commandLine 'yarn.cmd', 'install'
+    } else { // 윈도우가 아닐 경우
+        commandLine "yarn", "audit", "fix"
+        commandLine 'yarn', 'install'
+    }
+}
+
+tasks.register('buildReact', Exec) { // 리액트 빌드
+    dependsOn "installReact" // 리액트 설치가 끝나야 빌드를 할 수 있도록 설정
+    workingDir "$reactDir" // 리액트 디렉토리에서 실행
+    inputs.dir "$reactDir" // 리액트 디렉토리를 입력으로 받음
+    group = BasePlugin.BUILD_GROUP // 그룹 설정
+    if (System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')) {
+        commandLine "yarn.cmd", "run", "build"
+    } else {
+        commandLine "yarn", "run", "build"
+    }
+}
+
+tasks.register('copyReactBuildFiles', Copy) { // 리액트 빌드 파일들을 복사해준다.
+    dependsOn "buildReact" // 리액트 빌드가 끝나야 복사를 할 수 있도록 설정
+    from "$reactDir/build" // 리액트 빌드 디렉토리에서
+    into "$projectDir/src/main/resources/static" // 스프링 리소스 디렉토리로
+}
+jar { // jar 파일에 리액트 빌드 파일들을 포함시킨다.
+    enabled = false // 기본 jar 파일 생성을 끈다.
 }

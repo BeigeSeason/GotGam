@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 
-export const API_BASE_URL = "http://localhost:8111";
+export const API_BASE_URL = "";
 
 interface Token {
   accessToken: string | null;
@@ -8,7 +8,7 @@ interface Token {
 }
 
 const Common = {
-  FINAL_DOMAIN: "http://localhost:8111",
+  FINAL_DOMAIN: "",
 
   getAccessToken: (): string | null => {
     return localStorage.getItem("accessToken");

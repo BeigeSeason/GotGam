@@ -1,10 +1,76 @@
+version: '3.8'
 services:
-  mysql:
-    image: 'mysql:latest'
-    environment:
-      - 'MYSQL_DATABASE=mydatabase'
-      - 'MYSQL_PASSWORD=secret'
-      - 'MYSQL_ROOT_PASSWORD=verysecret'
-      - 'MYSQL_USER=myuser'
+  springboot:
+    env_file:
+      - .env
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - '3306'
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/kh_final_db
+      - SPRING_DATASOURCE_USERNAME=${MYSQL_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${MYSQL_PASSWORD}
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+      - FLASK_API_URL=http://43.200.238.105:5000
+      - SPRING_ELASTICSEARCH_REST_URIS=http://43.200.238.105:9200
+      - SPRING_ELASTICSEARCH_REST_USERNAME=elastic
+      - SPRING_ELASTICSEARCH_REST_PASSWORD=${ELASTIC_PASSWORD}
+    depends_on:
+      - mysql
+      - redis
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+          cpus: "0.5"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password --innodb-buffer-pool-size=128M
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=gotgam_db
+      - MYSQL_USER=gotgam_user
+      - MYSQL_PASSWORD=your_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+          cpus: "0.2"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  redis:
+    image: redis:latest
+    command: redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+          cpus: "0.1"
+    restart: unless-stopped
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+  redis-data:
+
+networks:
+  app-network:
+    driver: bridge

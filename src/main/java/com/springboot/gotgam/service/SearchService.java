@@ -253,8 +253,8 @@ public class SearchService {
 
         Member member = memberRepository.findByUserId(userId).orElseThrow(() -> new RuntimeException("Member not found"));
 
-        Page<Bookmark> bookmarkedDiariesPage = bookmarkRepository.findByMemberAndType(member, Type.DIARY, pageable);
-        List<String> diaryIds = bookmarkedDiariesPage.getContent().stream()
+        List<Bookmark> bookmarkedDiaries = bookmarkRepository.findByMemberAndType(member, Type.DIARY);
+        List<String> diaryIds = bookmarkedDiaries.stream()
                 .map(Bookmark::getBookmarkedId)
                 .collect(Collectors.toList());
 
@@ -282,8 +282,8 @@ public class SearchService {
 
         Member member = memberRepository.findByUserId(userId).orElseThrow(() -> new RuntimeException("Member not found"));
 
-        Page<Bookmark> bookmarkedTourSpotsPage = bookmarkRepository.findByMemberAndType(member, Type.TOURSPOT, pageable);
-        List<String> tourSpotIds = bookmarkedTourSpotsPage.getContent().stream()
+        List<Bookmark> bookmarkedTourSpots = bookmarkRepository.findByMemberAndType(member, Type.TOURSPOT);
+        List<String> tourSpotIds = bookmarkedTourSpots.stream()
                 .map(Bookmark::getBookmarkedId)
                 .collect(Collectors.toList());
 
@@ -314,10 +314,8 @@ public class SearchService {
             }
 
             BoolQueryBuilder boolQuery = boolQuery()
-                    .should(QueryBuilders.matchPhraseQuery("title", keyword).boost(10.0f)) // 원문 연속 매칭
-                    .should(QueryBuilders.multiMatchQuery(keyword, "title.ngram").boost(1.0f)) // 부분 매칭
+                    .should(QueryBuilders.matchPhraseQuery("title", keyword)) // 원문 연속 매칭
                     .minimumShouldMatch(1);
-            boolQuery.must(boolQuery);
 
             NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder()
                     .withQuery(boolQuery)

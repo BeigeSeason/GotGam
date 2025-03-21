@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/review-bookmark")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
 public class ReviewBookmarkController {
     private final ReviewService reviewService;
     private final BookmarkService bookmarkService;

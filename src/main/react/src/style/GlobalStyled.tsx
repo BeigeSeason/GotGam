@@ -10,12 +10,12 @@ export const GlobalFont = createGlobalStyle`
   font-style: normal;
 }
 .content-font1{
-  font-family: "Gothic A1", serif;
+  font-family: "Nanum Gothic", sans-serif;
   font-weight: 400;
   font-style: normal;
 }
 .content-font2{
-  font-family: "Nanum Brush Script", serif;
+  font-family: "Poor Story", system-ui;
   font-weight: 400; 
   font-style: normal;
 }
@@ -90,17 +90,20 @@ export const NavSt = styled.div`
     align-items: center;
   }
   .leftMenu {
-    gap: 5vw;
+    gap: 4vw;
   }
   .rightMenu {
     display: flex;
     position: absolute;
     right: 9%;
-    gap: 3vw;
+    gap: 2vw;
   }
   .tag {
     text-decoration: none;
+    border-bottom: 2px solid transparent;
     color: ${colors.colorA};
+    padding: 0 8px 5px;
+    box-sizing: border-box;
     transition: all 0.3s ease;
     font-weight: bold;
     cursor: pointer;
@@ -110,6 +113,7 @@ export const NavSt = styled.div`
     }
     &.active {
       opacity: 0.7;
+      border-bottom: 2px solid #7d6458;
     }
   }
 `;

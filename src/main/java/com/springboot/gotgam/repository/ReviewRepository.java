@@ -1,5 +1,6 @@
 package com.springboot.gotgam.repository;
 
+import com.springboot.gotgam.entity.mysql.Member;
 import com.springboot.gotgam.entity.mysql.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,4 +26,6 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     Double avgRatingByTourSpotId(@Param("tourSpotId") String tourSpotId);
 
     Page<Review> findAllByTourSpotId(String tourSpotId, Pageable pageable);
+
+    Page<Review> findAllByMember(Member member, Pageable pageable);
 }

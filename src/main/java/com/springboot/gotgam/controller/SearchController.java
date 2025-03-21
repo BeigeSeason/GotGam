@@ -19,7 +19,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/search")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
 public class SearchController {
     private final SearchService searchService;
     private final TourSpotService tourSpotService;

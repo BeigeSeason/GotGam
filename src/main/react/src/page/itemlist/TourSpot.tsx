@@ -125,7 +125,7 @@ export const TourSpot = () => {
     if (!tourSpotDetail?.contentId) return;
 
     try {
-      const response = await AxiosApi.reviewList(
+      const response = await ItemApi.reviewList(
         currentPage,
         commentsPerPage,
         tourSpotDetail?.contentId
@@ -157,7 +157,7 @@ export const TourSpot = () => {
       };
 
       try {
-        await AxiosApi.postReview(reviewData);
+        await ItemApi.postReview(reviewData);
 
         setComments((prevComments) => {
           const updatedComments = [
@@ -208,7 +208,7 @@ export const TourSpot = () => {
       content: editContent,
     };
     try {
-      await AxiosApi.editReview(reviewData);
+      await ItemApi.editReview(reviewData);
       setComments((prevComments) => {
         return prevComments.map((comment) => {
           if (comment.id === id) {
@@ -235,12 +235,21 @@ export const TourSpot = () => {
   };
   const handleReviewDelete = async () => {
     try {
-      await AxiosApi.deleteReview(deleteReviewId);
+      await ItemApi.deleteReview(deleteReviewId);
 
+      // setComments((prevComments) => {
+      //   return prevComments.filter((comment) => comment.id !== deleteReviewId);
+      // });
       setComments((prevComments) => {
-        return prevComments.filter((comment) => comment.id !== deleteReviewId);
+        return prevComments.map((comment) =>
+          comment.id === deleteReviewId
+            ? { ...comment, content: "해당 댓글은 삭제되었습니다." } // content만 변경
+            : comment
+        );
       });
+      setTotalComments(totalComments - 1);
 
+      setTotalComments(totalComments - 1);
       setNeedDeleteModal(false);
     } catch (error) {
       console.log("댓글 삭제 실패");
@@ -549,12 +558,7 @@ export const TourSpot = () => {
                 onMouseMove={handleRatingHover}
                 onMouseLeave={handleRatingLeave}
                 onClick={handleRatingClick}
-                style={{
-                  display: "flex",
-                  gap: 5,
-                  cursor: "pointer",
-                  width: "140px",
-                }}
+                className="reviewRating"
               >
                 {[...Array(5)].map((_, i) => {
                   const score = ratingHover || rating; // 마우스 오버 or 확정된 값
@@ -592,34 +596,35 @@ export const TourSpot = () => {
                       {c.rating}점
                     </div>
                   </div>
-                  {c.nickname === nickname && (
-                    <div className="header-right">
-                      {editIndex === index ? (
+                  {c.nickname === nickname &&
+                    c.content !== "해당 댓글은 삭제되었습니다." && (
+                      <div className="header-right">
+                        {editIndex === index ? (
+                          <div
+                            className="button"
+                            onClick={() =>
+                              handleSaveEdit(c.id, editContent, editRating)
+                            }
+                          >
+                            저장
+                          </div>
+                        ) : (
+                          <div
+                            className="button"
+                            onClick={() => handleReviewEdit(index, c.content)}
+                          >
+                            수정
+                          </div>
+                        )}
+                        |
                         <div
                           className="button"
-                          onClick={() =>
-                            handleSaveEdit(c.id, editContent, editRating)
-                          }
+                          onClick={() => clickReviewDelete(c.id)}
                         >
-                          저장
+                          삭제
                         </div>
-                      ) : (
-                        <div
-                          className="button"
-                          onClick={() => handleReviewEdit(index, c.content)}
-                        >
-                          수정
-                        </div>
-                      )}
-                      |
-                      <div
-                        className="button"
-                        onClick={() => clickReviewDelete(c.id)}
-                      >
-                        삭제
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
 
                 <div className="comment" style={{ whiteSpace: "pre-line" }}>
@@ -636,12 +641,7 @@ export const TourSpot = () => {
                           onMouseMove={handleEditRatingHover}
                           onMouseLeave={handleEditRatingLeave}
                           onClick={handleEditRatingClick}
-                          style={{
-                            display: "flex",
-                            gap: 5,
-                            cursor: "pointer",
-                            width: "140px",
-                          }}
+                          className="reviewRating"
                         >
                           {[...Array(5)].map((_, i) => {
                             const score = editRatingHover || editRating; // 마우스 오버 or 확정된 값

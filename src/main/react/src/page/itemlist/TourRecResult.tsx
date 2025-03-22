@@ -52,7 +52,7 @@ const TourRecResult = () => {
         <h1 className="tour-title">여행지 추천</h1>
       </SpotTitle>
       <h2>
-        회원님과 {(recommendations[4]["Probability_5.0"] * 100).toFixed(0)}%
+        회원님과 {(recommendations[4]["Probability"] * 100).toFixed(0)}%
         맞는 여행지에요!
       </h2>
 

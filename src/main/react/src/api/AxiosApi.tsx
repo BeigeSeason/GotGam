@@ -305,7 +305,7 @@ const AxiosApi = {
       const response = await axios.post<{
         status: string;
         recommendations: Recommendation[];
-      }>(`http://localhost:5000/recommend`, data);
+      }>(`${API_BASE_URL}/flask/recommend`, data);
 
       if (response.data.status === "success") {
         return response.data.recommendations;

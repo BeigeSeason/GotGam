@@ -132,21 +132,27 @@ public class TourSpots {
     // detail 필드는 여기서밖에 사용하지 않기 때문에 엔티티 내부에 정의함
     @Data
     public static class Detail {
+        // 이미지 목록
         @Field(type = FieldType.Keyword)
         private List<String> images;
 
+        // 문의(연락처)
         @Field(type = FieldType.Keyword, name = "info_center")
         private String infoCenter;
 
+        // 설명
         @Field(type = FieldType.Keyword)
         private String overview;
 
+        // 이용시간
         @Field(type = FieldType.Keyword, name = "use_time")
         private String useTime;
 
+        // 주차
         @Field(type = FieldType.Keyword)
         private String parking;
 
+        // 홈페이지
         @Field(type = FieldType.Keyword)
         private String homepage;
     }

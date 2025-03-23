@@ -37,6 +37,7 @@ const TourRecResult = () => {
         const response = await AxiosApi.recommendResult(keyword);
         setRecArray(response);
         console.log("백엔드 응답:", response);
+        console.log(recommendations);
         // 응답을 받아서 상태를 업데이트하거나 다른 작업을 할 수 있습니다
       } catch (error) {
         console.error("데이터 요청 실패:", error);
@@ -47,64 +48,66 @@ const TourRecResult = () => {
   }, [recommendations]); // recommendations가 변경될 때마다 호출
 
   return (
-    <TourItemInfoBox>
-      <SpotTitle>
-        <h1 className="tour-title">여행지 추천</h1>
-      </SpotTitle>
-      {recommendations.length===0
-      ? <h2>
-          없어요.
-        </h2>
-      : <h2>
-          회원님과 {(recommendations[0].Probability * 100).toFixed(0)}% 맞는 여행지에요!
-        </h2>
-      }
-      <RecommendBox>
-        {Object.keys(recArray).map((area: string, index: number) => (
-          <div key={index}>
-            <div className="result-item-head">
-              <span className="name">{area}</span>
-              <span
-                className="link center underLine"
-                onClick={() =>
-                  navigate(`/tourlist?searchQuery=${area}&pageSize=10&page=0`)
-                }
-              >
+      <TourItemInfoBox>
+        <SpotTitle>
+          <h1 className="tour-title">여행지 추천</h1>
+        </SpotTitle>
+        <RecommendBox>
+          {Object.keys(recArray).map((area: string, index: number) => (
+              <div key={index}>
+                <div className="result-item-head">
+                  <span className="name">{area}</span>
+                  <span
+                      className="link center underLine"
+                      onClick={() =>
+                          navigate(`/tourlist?searchQuery=${area}&pageSize=10&page=0`)
+                      }
+                  >
                 더보기
                 <FaArrowRight />
               </span>
-            </div>
-            <div className="flex-row gap30">
-              {recArray[area].map((item: any, idx: number) => (
-                <div
-                  key={idx}
-                  onClick={() => navigate(`/tourspot/${item.spotId}`)}
-                  style={{ cursor: "pointer", width: "120px" }}
-                  className="underLine"
-                >
-                  {item.thumbnail === "" ? (
-                    <img
-                      src={basicImg}
-                      alt={area}
-                      style={{ width: "120px", height: "120px" }}
-                    />
-                  ) : (
-                    <img
-                      src={item.thumbnail}
-                      alt={area}
-                      style={{ width: "120px", height: "120px" }}
-                    />
-                  )}
-                  <div>{item.title || "제목 없음"}</div>
-                  {/* <div>사진주소: {item.thumbnail || "없음"}</div>
-                  <div>링크주소: {item.spotId}</div> */}
                 </div>
-              ))}
-            </div>
-          </div>
-        ))}
-      </RecommendBox>
-    </TourItemInfoBox>
+                {recommendations[index] && (
+                    <div style={{ marginBottom: "5px" }}>
+                      회원님과의 매칭률
+                      <b>
+                        {" "}
+                        {(recommendations[index].Probability * 100).toFixed(0)}%{" "}
+                      </b>
+                      인 여행지에요
+                    </div>
+                )}
+                <div className="flex-row gap30">
+                  {recArray[area].map((item: any, idx: number) => (
+                      <div
+                          key={idx}
+                          onClick={() => navigate(`/tourspot/${item.spotId}`)}
+                          style={{ cursor: "pointer", width: "120px" }}
+                          className="underLine"
+                      >
+                        {item.thumbnail === "" ? (
+                            <img
+                                src={basicImg}
+                                alt={area}
+                                style={{ width: "120px", height: "120px" }}
+                            />
+                        ) : (
+                            <img
+                                src={item.thumbnail}
+                                alt={area}
+                                style={{ width: "120px", height: "120px" }}
+                            />
+                        )}
+                        <div>{item.title || "제목 없음"}</div>
+                        {/* <div>사진주소: {item.thumbnail || "없음"}</div>
+                  <div>링크주소: {item.spotId}</div> */}
+                      </div>
+                  ))}
+                </div>
+              </div>
+          ))}
+        </RecommendBox>
+      </TourItemInfoBox>
   );
 };
 

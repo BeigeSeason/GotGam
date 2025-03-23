@@ -177,7 +177,6 @@ public class TourSpotService {
                 detailDto.setMapX(tourSpot.getMapX());
                 detailDto.setMapY(tourSpot.getMapY());
                 detailDto.setNearSpots(findNearestTourSpots(tourSpot.getLocation(), tourSpot.getContentId()));
-                log.info("Caching TourSpotDetailDto with nearSpots: {}", detailDto.getNearSpots().toString());
                 // Redis 캐시 저장
                 tourSpotDetailRedisTemplate.opsForValue().set(cacheKey, detailDto, 1, TimeUnit.MINUTES);
                 long endTime = System.currentTimeMillis();

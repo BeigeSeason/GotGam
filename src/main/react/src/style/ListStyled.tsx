@@ -3,22 +3,24 @@ import { colors } from "./GlobalStyled";
 
 export const List = styled.div`
   display: flex;
-  width: 80%;
+  width: 90%;
   min-height: 1000px;
   margin: auto;
   margin-top: 20px;
   margin-bottom: 50px;
   justify-content: center;
   @media (max-width: 768px) {
-    width: 90%;
+    width: 95%;
   }
 `;
 
 export const SelectSearchItem = styled.div`
   position: relative;
-  margin-right: 50px;
-  margin-top: 100px;
-  width: 350px;
+  margin-right: 4vw;
+  margin-top: 70px;
+  /* width: 350px; */
+  /* width: 20vw; */
+  width: 300px;
   height: 100%;
   padding: 40px 20px 20px 20px;
   border-radius: 30px;
@@ -123,6 +125,7 @@ export const SelectSearchItem = styled.div`
     }
     @media (max-width: 768px) {
       top: 4px;
+      right: 4px;
       scale: 80%;
     }
   }
@@ -137,18 +140,19 @@ export const SelectSearchItem = styled.div`
   .toggle-button:hover {
     color: ${colors.colorB};
   }
-  @media (max-width: 1024px) {
+  /* @media (max-width: 1024px) {
     width: 300px;
     .buttons {
       grid-template-columns: repeat(2, 1fr);
     }
-  }
+  } */
   /* SelectTourItem 기본 상태 숨기기 (모바일 화면) */
   @media (max-width: 768px) {
     visibility: hidden;
     opacity: 0;
     transform: translateX(-100%);
     transition: all 0.3s ease;
+    height: 730px;
 
     &.open {
       visibility: visible;
@@ -159,19 +163,19 @@ export const SelectSearchItem = styled.div`
     z-index: 10;
     top: 90px;
     left: 40px;
-    padding: 10px;
+    padding: 35px 10px 10px;
     border-radius: 10px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    .buttons {
+    /* .buttons {
       width: 80%;
-    }
+    } */
     button {
-      font-size: 9px;
+      font-size: 11px;
       width: 90px;
       height: 28px;
     }
     h3 {
-      font-size: 15px;
+      font-size: 17px;
       margin: 15px 0 5px 10px;
       &.title {
         margin-left: 0;
@@ -204,7 +208,7 @@ export const ItemList = styled.div`
   flex-direction: column;
   align-items: center;
   height: 100%;
-  width: 40vw;
+  width: 50vw;
   .totalCount {
     align-self: flex-start;
     font-size: 25px;

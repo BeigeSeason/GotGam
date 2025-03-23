@@ -9,7 +9,9 @@ import {
 import { AdminHeaderSt, AdminNav } from "../page/admin/AdminComponent";
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useMediaQuery } from "react-responsive";
 import logoImg from "../img/gotgamlogo.png";
+import mobileLogoImg from "../img/gotgamlogo_mobile.png";
 import { SearchBox } from "./InputComponent";
 import { Modal, LoginModal } from "./ModalComponent";
 import { useSelector, useDispatch } from "react-redux";
@@ -21,6 +23,7 @@ import { GetProfileImageSrc } from "./ProfileComponent";
 // 헤더---------------------------------------------------------------------------------
 export const Header = () => {
   const navigate = useNavigate();
+  const isMobile = useMediaQuery({ query: "(max-width: 860px)" });
   const [searchTerm, setSearchTerm] = useState("");
   const { profile, accessToken } = useSelector(
     (state: RootState) => state.auth
@@ -53,7 +56,7 @@ export const Header = () => {
       <GlobalFont />
       <HeaderSt>
         <Link to="/" className="logo">
-          <img src={logoImg} alt="로고" />
+          <img src={isMobile ? mobileLogoImg : logoImg} alt="로고" />
         </Link>
 
         <div className="inputSearch">
@@ -64,7 +67,6 @@ export const Header = () => {
             onSearch={handleSearch}
           />
         </div>
-
         <Link to="/mypage" className={`usericon ${accessToken ? "show" : ""}`}>
           <img src={GetProfileImageSrc(profile)} alt="사용자 아이콘" />
         </Link>
@@ -77,6 +79,7 @@ export const Header = () => {
 export const AdminHeader = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const isMobile = useMediaQuery({ query: "(max-width: 860px)" });
 
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
   const accessToken = useSelector((state: RootState) => state.auth.accessToken);
@@ -97,8 +100,6 @@ export const AdminHeader = () => {
   };
   const handleConfirmLogout = () => {
     dispatch(clearTokens());
-    // localStorage.removeItem("accessToken");
-    // localStorage.removeItem("refreshToken");
     handleCloseModal();
     navigate("/");
   };
@@ -109,7 +110,7 @@ export const AdminHeader = () => {
       <HeaderSt>
         <div className="leftMenu">
           <Link to="/" className="logo">
-            <img src={logoImg} alt="로고" />
+            <img src={isMobile ? mobileLogoImg : logoImg} alt="로고" />
           </Link>
           <p
             className={`tag content-font1 click ${
@@ -177,8 +178,6 @@ export const Nav = () => {
 
   const handleConfirmLogout = () => {
     dispatch(clearTokens());
-    // localStorage.removeItem("accessToken");
-    // localStorage.removeItem("refreshToken");
     handleCloseModal();
     navigate("/");
   };
@@ -193,6 +192,7 @@ export const Nav = () => {
 
   return (
     <NavSt>
+      {/* <FaBars className="menu-icon" /> */}
       <div className="leftMenu">
         <Link
           className={`tag content-font1 ${
@@ -223,7 +223,7 @@ export const Nav = () => {
         {accessToken && (
           <>
             <Link
-              className={`tag content-font1 ${
+              className={`tag content-font1 desktop ${
                 isActive("/creatediary") ? "active" : ""
               }`}
               to="/creatediary"
@@ -231,7 +231,7 @@ export const Nav = () => {
               여행일지 만들기
             </Link>
             <Link
-              className={`tag content-font1 ${
+              className={`tag content-font1 desktop ${
                 isActive("/mypage") ? "active" : ""
               }`}
               to="/mypage"
@@ -266,7 +266,13 @@ export const Nav = () => {
 
 // 푸터---------------------------------------------------------------------------
 export const Footer = () => {
-  return <FooterSt>푸터</FooterSt>;
+  return (
+    <FooterSt>
+      <h4>GotGam</h4>
+      <p>문의가 필요한 사항은 메일 부탁드립니다.</p>
+      <p>mail: plan4land.mail@gmail.com</p>
+    </FooterSt>
+  );
 };
 
 // 전체 레이아웃 씌우기---------------------------------------------------------------

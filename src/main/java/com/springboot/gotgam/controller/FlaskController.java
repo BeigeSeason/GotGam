@@ -21,9 +21,8 @@ public class FlaskController {
     @PostMapping("/recommend")
     public ResponseEntity<Map<String, Object>> recommend(@RequestBody Map<String, Object> data) {
         try {
-            log.info(data.toString());
             ResponseEntity<Map> response = restTemplate.postForEntity("http://43.200.238.105:5000/recommend", data, Map.class);
-            log.info("Flask 응답: {}", response.getBody());
+            log.info(response.getBody().toString());
             return ResponseEntity.ok(response.getBody());
         } catch (Exception e) {
             log.error("Flask 요청 실패: {}", e.getMessage());

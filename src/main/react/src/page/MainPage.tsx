@@ -70,7 +70,7 @@ export const Main = () => {
     const filters = {
       page: 0,
       size: 5,
-      sort: "rating,desc",
+      sort: "avg_rating,desc",
     };
     const response = await ItemApi.getTourSpotList(filters);
     setPlaces(response.content);
@@ -87,8 +87,8 @@ export const Main = () => {
 
   // 카테고리 이름을 찾는 유틸 함수
   const getCategoryNames = (
-    cat1: string | null | undefined,
-    cat2: string | null | undefined
+      cat1: string | null | undefined,
+      cat2: string | null | undefined
   ): string[] => {
     const result: string[] = [];
 
@@ -143,7 +143,7 @@ export const Main = () => {
       const data = target.dataItem.dataContext as any;
       if (data && data.name) {
         const area = tooltipAreas.find(
-          (a) => a.tooltip === data.name || a.name === data.name
+            (a) => a.tooltip === data.name || a.name === data.name
         );
         return area ? area.name : data.name; // 한국어 이름 반환, 없으면 기본 이름
       }
@@ -169,7 +169,7 @@ export const Main = () => {
       if (data && data.name) {
         // tooltipAreas에서 해당 지역의 code를 찾음
         const area = tooltipAreas.find(
-          (a) => a.tooltip === data.name || a.name === data.name
+            (a) => a.tooltip === data.name || a.name === data.name
         );
         if (area && area.code) {
           navigate(`/tourlist?areaCode=${area.code}&pageSize=10&page=0`);
@@ -187,128 +187,128 @@ export const Main = () => {
   }, []);
 
   return (
-    <>
-      <GlobalFont />
-      <MainBox>
-        <Banner className="GridItem">
-          <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
-            spaceBetween={50}
-            slidesPerView={1}
-            loop={true}
-            navigation
-            pagination={{ clickable: true }}
-            // autoplay={{ delay: 5000, disableOnInteraction: false }}
-          >
-            {bannerData.map((data) => (
-              <SwiperSlide key={data.title} className="swiper-slide-custom">
-                <div
-                  className="background"
-                  style={{ backgroundColor: data.backgroundColor }}
-                />
-                <div className="slide-content">
-                  <div className="slide-text-container">
-                    <h1 className="title">{data.title}</h1>
-                    <h3 className="sub-title">{data.subTitle}</h3>
-                  </div>
-                  <img
-                    src={data.imageSrc || SpotBasicImg}
-                    alt={data.alt}
-                    className="slide-image"
-                    onClick={() => navigate(data.navigatePath)}
-                  />
-                </div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-        </Banner>
-        <BestSpot className="GridItem">
-          <h2 className="section-title">
-            🔥 지금 가장 핫한 여행지! 놓치면 후회할 곳은?
-          </h2>
-          <div className="bestspots-container">
-            {(isMobile ? places.slice(0, 4) : places).map((place) => {
-              const categories = getCategoryNames(place.cat1, place.cat2).join(
-                " > "
-              );
+      <>
+        <GlobalFont />
+        <MainBox>
+          <Banner className="GridItem">
+            <Swiper
+                modules={[Navigation, Pagination, Autoplay]}
+                spaceBetween={50}
+                slidesPerView={1}
+                loop={true}
+                navigation
+                pagination={{ clickable: true }}
+                // autoplay={{ delay: 5000, disableOnInteraction: false }}
+            >
+              {bannerData.map((data) => (
+                  <SwiperSlide key={data.title} className="swiper-slide-custom">
+                    <div
+                        className="background"
+                        style={{ backgroundColor: data.backgroundColor }}
+                    />
+                    <div className="slide-content">
+                      <div className="slide-text-container">
+                        <h1 className="title">{data.title}</h1>
+                        <h3 className="sub-title">{data.subTitle}</h3>
+                      </div>
+                      <img
+                          src={data.imageSrc || SpotBasicImg}
+                          alt={data.alt}
+                          className="slide-image"
+                          onClick={() => navigate(data.navigatePath)}
+                      />
+                    </div>
+                  </SwiperSlide>
+              ))}
+            </Swiper>
+          </Banner>
+          <BestSpot className="GridItem">
+            <h2 className="section-title">
+              🔥 지금 가장 핫한 여행지! 놓치면 후회할 곳은?
+            </h2>
+            <div className="bestspots-container">
+              {(isMobile ? places.slice(0, 4) : places).map((place) => {
+                const categories = getCategoryNames(place.cat1, place.cat2).join(
+                    " > "
+                );
 
-              return (
-                <div
-                  className="spot-container"
-                  key={place.spotId}
-                  onClick={() => navigate(`/tourspot/${place.spotId}`)}
-                >
-                  <img src={place.thumbnail || SpotBasicImg} alt="썸네일" />
-                  <p className="title">{place.title}</p>
-                  <p className="address">{place.addr}</p>
-                  {categories && <p className="categories">{categories}</p>}
-                  <p className="rating">
-                    <GoStarFill style={{ color: "#FFD700" }} />
-                    &nbsp;{place.avgRating.toFixed(2)} (
-                    {place.reviewCount.toLocaleString()})
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </BestSpot>
-        <BestDiary className="GridItem">
-          <h2 className="section-title">
-            📖 여행은 끝났지만, 이야기로 남았다.
-          </h2>
-          <div className="bestdiaries-container">
-            {(isMobile ? diaries.slice(0, 3) : diaries).map((diary) => (
-              <div
-                className="diary-container"
-                key={diary.diaryId}
-                onClick={() => navigate(`/diary/${diary.diaryId}`)}
-              >
-                <img src={diary.thumbnail || DiaryBasicImg} alt="썸네일" />
-                <p className="title">{diary.title}</p>
-                <p className="content">{diary.contentSummary}</p>
-                <div className="travel-info">
-                  <FaRegMap /> <span>{diary.region}</span>
-                </div>
-                <div className="travel-info">
-                  <FaRegCalendarAlt />{" "}
-                  <span>
+                return (
+                    <div
+                        className="spot-container"
+                        key={place.spotId}
+                        onClick={() => navigate(`/tourspot/${place.spotId}`)}
+                    >
+                      <img src={place.thumbnail || SpotBasicImg} alt="썸네일" />
+                      <p className="title">{place.title}</p>
+                      <p className="address">{place.addr}</p>
+                      {categories && <p className="categories">{categories}</p>}
+                      <p className="rating">
+                        <GoStarFill style={{ color: "#FFD700" }} />
+                        &nbsp;{place.avgRating.toFixed(2)} (
+                        {place.reviewCount.toLocaleString()})
+                      </p>
+                    </div>
+                );
+              })}
+            </div>
+          </BestSpot>
+          <BestDiary className="GridItem">
+            <h2 className="section-title">
+              📖 여행은 끝났지만, 이야기로 남았다.
+            </h2>
+            <div className="bestdiaries-container">
+              {(isMobile ? diaries.slice(0, 3) : diaries).map((diary) => (
+                  <div
+                      className="diary-container"
+                      key={diary.diaryId}
+                      onClick={() => navigate(`/diary/${diary.diaryId}`)}
+                  >
+                    <img src={diary.thumbnail || DiaryBasicImg} alt="썸네일" />
+                    <p className="title">{diary.title}</p>
+                    <p className="content">{diary.contentSummary}</p>
+                    <div className="travel-info">
+                      <FaRegMap /> <span>{diary.region}</span>
+                    </div>
+                    <div className="travel-info">
+                      <FaRegCalendarAlt />{" "}
+                      <span>
                     {diary.startDate?.replaceAll("-", ". ")} ~{" "}
-                    {diary.endDate?.replaceAll("-", ". ")}
+                        {diary.endDate?.replaceAll("-", ". ")}
                   </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </BestDiary>
-        <PolygonMap>
-          <h2 className="section-title">원하는 지역을 바로 찾기🔍</h2>
-          <div className="map" ref={mapRef} />
-        </PolygonMap>
-        <QuickSearch>
-          <div className="SelectCategory">
-            <h2 className="section-title">취향 맞춤 카테고리 Pick🎯</h2>
-            <div className="catebuttons">
-              {types.map((type) => (
-                <CateButton
-                  key={type.code}
-                  onClick={() => navigate(`/tourlist?category=${type.code}`)}
-                  typeName={type.name}
-                  style={{
-                    backgroundImage: `url(${type.img})`,
-                    backgroundSize: "cover", // 이미지가 버튼을 덮도록
-                    backgroundPosition: "center", // 이미지의 중앙을 버튼에 맞춤
-                  }}
-                ></CateButton>
+                    </div>
+                  </div>
               ))}
             </div>
-          </div>
-          <div className="recommend-banner">
-            <div className="banner" onClick={() => navigate("/tourRecommend")}>
-              <img src={AIBanner} alt="" />
+          </BestDiary>
+          <PolygonMap>
+            <h2 className="section-title">원하는 지역을 바로 찾기🔍</h2>
+            <div className="map" ref={mapRef} />
+          </PolygonMap>
+          <QuickSearch>
+            <div className="SelectCategory">
+              <h2 className="section-title">취향 맞춤 카테고리 Pick🎯</h2>
+              <div className="catebuttons">
+                {types.map((type) => (
+                    <CateButton
+                        key={type.code}
+                        onClick={() => navigate(`/tourlist?category=${type.code}`)}
+                        typeName={type.name}
+                        style={{
+                          backgroundImage: `url(${type.img})`,
+                          backgroundSize: "cover", // 이미지가 버튼을 덮도록
+                          backgroundPosition: "center", // 이미지의 중앙을 버튼에 맞춤
+                        }}
+                    ></CateButton>
+                ))}
+              </div>
             </div>
-          </div>
-        </QuickSearch>
-      </MainBox>
-    </>
+            <div className="recommend-banner">
+              <div className="banner" onClick={() => navigate("/tourRecommend")}>
+                <img src={AIBanner} alt="" />
+              </div>
+            </div>
+          </QuickSearch>
+        </MainBox>
+      </>
   );
 };

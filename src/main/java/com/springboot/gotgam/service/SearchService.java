@@ -61,7 +61,6 @@ public class SearchService {
         Pageable pageable = PageRequest.of(page, size, sortOrder);
         BoolQueryBuilder boolQuery = boolQuery();
 
-
         boolean hasFilters = keyword != null || areaCode != null || sigunguCode != null || minPrice != 0 || maxPrice != 0;
 
         if (!hasFilters) {
@@ -83,8 +82,6 @@ public class SearchService {
                         }
                         tagQuery.minimumShouldMatch(1); // 최소 1개 태그 매칭
                         boolQuery.must(tagQuery);
-
-                        log.info(boolQuery.toString());
                     }
                 } else {
                     // 일반 검색: title, content, region에서 검색

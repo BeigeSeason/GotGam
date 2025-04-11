@@ -22,8 +22,12 @@ import { ItemApi } from "../../api/ItemApi";
 import { Loading } from "../../component/Loading";
 import { Paginating } from "../../component/PaginationComponent";
 import { useMediaQuery } from "react-responsive";
+import { CheckModal } from "../../component/ModalComponent";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
 
 export const DiaryList: React.FC = () => {
+  const { userId } = useSelector((state: RootState) => state.auth);
   const [diaries, setDiaries] = useState<Diary[]>([]);
   const [totalPages, setTotalPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(0);
@@ -72,16 +76,17 @@ export const DiaryList: React.FC = () => {
       currentPage: parseInt(queryParams.get("page") || "0", 10),
       pageSize: parseInt(queryParams.get("pageSize") || "10", 10),
       minPrice: queryParams.has("minPrice")
-        ? parseInt(queryParams.get("minPrice") || "0", 10)
-        : undefined,
+          ? parseInt(queryParams.get("minPrice") || "0", 10)
+          : undefined,
       maxPrice: queryParams.has("maxPrice")
-        ? parseInt(queryParams.get("maxPrice") || "", 10)
-        : undefined,
+          ? parseInt(queryParams.get("maxPrice") || "", 10)
+          : undefined,
     };
   });
   const [searchQuery, setSearchQuery] = useState<string>(filters.searchQuery);
   const [isSelectOpen, setIsSelectOpen] = useState<boolean>(false);
   const selectRef = useRef<HTMLDivElement | null>(null);
+  const [needLoginModal, setNeedLoginModal] = useState<boolean>(false);
 
   useEffect(() => {
     const queryParams = new URLSearchParams();
@@ -96,8 +101,8 @@ export const DiaryList: React.FC = () => {
     });
     queryParams.set("page", currentPage.toString());
     navigate(
-      `/diarylist${queryParams.toString() ? `?${queryParams.toString()}` : ""}`,
-      { replace: true }
+        `/diarylist${queryParams.toString() ? `?${queryParams.toString()}` : ""}`,
+        { replace: true }
     );
     fetchDiaries(currentPage);
   }, [filters, navigate, currentPage]);
@@ -190,7 +195,7 @@ export const DiaryList: React.FC = () => {
 
   const handleSubAreaChange = (subAreaCode: string) => {
     const newSubAreaCode =
-      filters.subAreaCode === subAreaCode ? "" : subAreaCode;
+        filters.subAreaCode === subAreaCode ? "" : subAreaCode;
     updateFilters("subAreaCode", newSubAreaCode);
   };
 
@@ -199,10 +204,10 @@ export const DiaryList: React.FC = () => {
       const newFilters: DiaryFilters = { ...prev };
 
       if (
-        key === "areaCode" ||
-        key === "subAreaCode" ||
-        key === "searchQuery" ||
-        key === "sortBy"
+          key === "areaCode" ||
+          key === "subAreaCode" ||
+          key === "searchQuery" ||
+          key === "sortBy"
       ) {
         newFilters[key] = "";
       } else if (key === "minPrice") {
@@ -222,21 +227,21 @@ export const DiaryList: React.FC = () => {
 
   const handleClickOutside = (event: MouseEvent) => {
     if (
-      selectRef.current &&
-      !selectRef.current.contains(event.target as Node)
+        selectRef.current &&
+        !selectRef.current.contains(event.target as Node)
     ) {
       setIsSelectOpen(false);
     }
   };
   const updatePriceRange = () => {
     const min =
-      minPrice === ""
-        ? ""
-        : Math.min(Number(minPrice) || 0, Number(maxPrice) || 999999999);
+        minPrice === ""
+            ? ""
+            : Math.min(Number(minPrice) || 0, Number(maxPrice) || 999999999);
     const max =
-      maxPrice === ""
-        ? ""
-        : Math.max(Number(minPrice) || 0, Number(maxPrice) || 999999999);
+        maxPrice === ""
+            ? ""
+            : Math.max(Number(minPrice) || 0, Number(maxPrice) || 999999999);
 
     // minPrice와 maxPrice를 상태로 업데이트
     setMinPrice(String(min));
@@ -258,32 +263,40 @@ export const DiaryList: React.FC = () => {
     const numericValue = value.replace(/\D/g, ""); // 숫자만 남기기
     return numericValue.replace(/\B(?=(\d{3})+(?!\d))/g, ","); // 1000 단위 콤마 추가
   };
+
+  const clickCreateDiary = () => {
+    if (userId) {
+      navigate("/creatediary");
+    } else {
+      setNeedLoginModal(true);
+    }
+  };
   return (
-    <>
-      <FilterButton onClick={handleToggleSelect}>
-        <FaBars />
-      </FilterButton>
-      <List>
-        <SelectSearchItem
-          className={isSelectOpen ? "open" : ""}
-          ref={selectRef}
-        >
-          <button className="reset-button" onClick={handleResetSelections}>
-            초기화
-            <FaUndo style={{ marginLeft: "6px" }} />
-          </button>
-          <SearchBox
-            searchTerm={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            onSearch={handleSearch}
-            placeholder={
-              isMobile
-                ? "검색어 (태그: #사용)"
-                : "검색어 (태그: #사용 및 공백으로 구분)"
-            }
-          />
-          {/* <PriceRange>
+      <>
+        <FilterButton onClick={handleToggleSelect}>
+          <FaBars />
+        </FilterButton>
+        <List>
+          <SelectSearchItem
+              className={isSelectOpen ? "open" : ""}
+              ref={selectRef}
+          >
+            <button className="reset-button" onClick={handleResetSelections}>
+              초기화
+              <FaUndo style={{ marginLeft: "6px" }} />
+            </button>
+            <SearchBox
+                searchTerm={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={handleKeyDown}
+                onSearch={handleSearch}
+                placeholder={
+                  isMobile
+                      ? "검색어 (태그: #사용)"
+                      : "검색어 (태그: #사용 및 공백으로 구분)"
+                }
+            />
+            {/* <PriceRange>
             <div>
               <ReactSlider
                 className="slider"
@@ -304,188 +317,194 @@ export const DiaryList: React.FC = () => {
             </div>
             <Button onClick={updatePriceRange}>확인</Button>
           </PriceRange> */}
-          <div className="price">
-            <ToggleSection
-              title="금액"
-              isopen={isPriceOpen}
-              onToggle={() => setIsPriceOpen(!isPriceOpen)}
-            >
-              <div className="price-input-container">
-                <div
-                  className="price-wrapper"
-                  onClick={() =>
-                    document.getElementById("minPriceInput")?.focus()
-                  }
-                >
-                  <input
-                    id="minPriceInput"
-                    className="price-input"
-                    type="text"
-                    value={formatPrice(minPrice)}
-                    onChange={(e) => {
-                      let value = e.target.value.replace(/\D/g, ""); // 숫자만 허용
-                      if (value !== "" && Number(value) >= 1_000_000_000)
-                        return; // 10억 이상 입력 방지
-                      setMinPrice(value); // 빈 값도 허용
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        updatePriceRange();
-                      }
-                    }}
-                  />
-                  <span className="unit">원</span>
-                </div>
-                ~
-                <div
-                  className="price-wrapper"
-                  onClick={() =>
-                    document.getElementById("maxPriceInput")?.focus()
-                  }
-                >
-                  <input
-                    id="maxPriceInput"
-                    className="price-input"
-                    type="text"
-                    value={formatPrice(maxPrice)}
-                    onChange={(e) => {
-                      let value = e.target.value.replace(/\D/g, ""); // 숫자만 허용
-                      if (value !== "" && Number(value) >= 1_000_000_000)
-                        return; // 10억 이상 입력 방지
-                      setMaxPrice(value); // 빈 값도 허용
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        updatePriceRange();
-                      }
-                    }}
-                  />
-                  <span className="unit">원</span>
-                </div>
-              </div>
-              <Button className="confirm-button" onClick={updatePriceRange}>
-                적용
-              </Button>
-            </ToggleSection>
-          </div>
-          <div className="sort">
-            <ToggleSection
-              title="정렬"
-              isopen={isSortOpen}
-              onToggle={() => setIsSortOpen(!isSortOpen)}
-            >
-              <div className="buttons">
-                {sortOptions.map((option) => (
-                  <Button
-                    key={option.value}
-                    onClick={() => updateFilters("sortBy", option.value)}
-                    className={`sort-button ${
-                      filters.sortBy.startsWith(option.value) ? "selected" : ""
-                    }`}
-                  >
-                    # {option.label}
-                  </Button>
-                ))}
-              </div>
-            </ToggleSection>
-          </div>
-          <div className="mainarea">
-            <ToggleSection
-              title="지역 선택"
-              isopen={isAreaOpen}
-              onToggle={() => setIsAreaOpen(!isAreaOpen)}
-            >
-              <div className="buttons">
-                {areas.map((area) => (
-                  <Button
-                    key={area.code}
-                    onClick={() => handleAreaChange(area.code)}
-                    className={`area-button ${
-                      filters.areaCode === area.code ? "selected" : ""
-                    }`}
-                  >
-                    # {area.name}
-                  </Button>
-                ))}
-              </div>
-            </ToggleSection>
-          </div>
-
-          {selectedAreaData && (
-            <div className="subarea">
+            <div className="price">
               <ToggleSection
-                title="세부 지역 선택"
-                isopen={isSubAreaOpen}
-                onToggle={() => setIsSubAreaOpen(!isSubAreaOpen)}
+                  title="금액"
+                  isopen={isPriceOpen}
+                  onToggle={() => setIsPriceOpen(!isPriceOpen)}
+              >
+                <div className="price-input-container">
+                  <div
+                      className="price-wrapper"
+                      onClick={() =>
+                          document.getElementById("minPriceInput")?.focus()
+                      }
+                  >
+                    <input
+                        id="minPriceInput"
+                        className="price-input"
+                        type="text"
+                        value={formatPrice(minPrice)}
+                        onChange={(e) => {
+                          let value = e.target.value.replace(/\D/g, ""); // 숫자만 허용
+                          if (value !== "" && Number(value) >= 1_000_000_000)
+                            return; // 10억 이상 입력 방지
+                          setMinPrice(value); // 빈 값도 허용
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            updatePriceRange();
+                          }
+                        }}
+                    />
+                    <span className="unit">원</span>
+                  </div>
+                  ~
+                  <div
+                      className="price-wrapper"
+                      onClick={() =>
+                          document.getElementById("maxPriceInput")?.focus()
+                      }
+                  >
+                    <input
+                        id="maxPriceInput"
+                        className="price-input"
+                        type="text"
+                        value={formatPrice(maxPrice)}
+                        onChange={(e) => {
+                          let value = e.target.value.replace(/\D/g, ""); // 숫자만 허용
+                          if (value !== "" && Number(value) >= 1_000_000_000)
+                            return; // 10억 이상 입력 방지
+                          setMaxPrice(value); // 빈 값도 허용
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            updatePriceRange();
+                          }
+                        }}
+                    />
+                    <span className="unit">원</span>
+                  </div>
+                </div>
+                <Button className="confirm-button" onClick={updatePriceRange}>
+                  적용
+                </Button>
+              </ToggleSection>
+            </div>
+            <div className="sort">
+              <ToggleSection
+                  title="정렬"
+                  isopen={isSortOpen}
+                  onToggle={() => setIsSortOpen(!isSortOpen)}
               >
                 <div className="buttons">
-                  {selectedAreaData.subAreas.map((subArea) => (
-                    <Button
-                      key={subArea.code}
-                      onClick={() => handleSubAreaChange(subArea.code)}
-                      className={`subarea-button ${
-                        filters.subAreaCode === subArea.code ? "selected" : ""
-                      }`}
-                    >
-                      # {subArea.name}
-                    </Button>
+                  {sortOptions.map((option) => (
+                      <Button
+                          key={option.value}
+                          onClick={() => updateFilters("sortBy", option.value)}
+                          className={`sort-button ${
+                              filters.sortBy.startsWith(option.value) ? "selected" : ""
+                          }`}
+                      >
+                        # {option.label}
+                      </Button>
                   ))}
                 </div>
               </ToggleSection>
             </div>
-          )}
-        </SelectSearchItem>
-        <ItemList>
-          <div className="totalCount">
-            총{" "}
-            {totalElements > 9999 ? "9,999+" : totalElements.toLocaleString()}건
-            <Button onClick={() => navigate("/creatediary")}>
-              여행일지 작성
-            </Button>
-          </div>
-          <SelectedFilters
-            filters={{
-              areaCode: filters.areaCode,
-              subAreaCode: filters.subAreaCode,
-              searchQuery: filters.searchQuery,
-              sortBy: filters.sortBy,
-              minPrice: filters.minPrice,
-              maxPrice: filters.maxPrice,
-            }}
-            onRemoveFilter={handleTopFilterChange}
-          />
-          {diaries.map((diary, index) => (
-            <DiaryItem
-              key={index}
-              id={diary.diaryId}
-              thumbnail={diary.thumbnail}
-              profile={diary.writerImg}
-              description={[
-                diary.title,
-                diary.contentSummary,
-                diary.writer,
-                diary.createdAt.slice(0, 10).replaceAll("-", ". "),
-                new Date(diary.createdAt).toLocaleString(),
-                `${diary.writer} (${new Date(
-                  diary.createdAt
-                ).toLocaleString()})`,
-                diary.startDate.slice(0, 10).replaceAll("-", ". "),
-                diary.endDate.slice(0, 10).replaceAll("-", ". "),
-              ]}
+            <div className="mainarea">
+              <ToggleSection
+                  title="지역 선택"
+                  isopen={isAreaOpen}
+                  onToggle={() => setIsAreaOpen(!isAreaOpen)}
+              >
+                <div className="buttons">
+                  {areas.map((area) => (
+                      <Button
+                          key={area.code}
+                          onClick={() => handleAreaChange(area.code)}
+                          className={`area-button ${
+                              filters.areaCode === area.code ? "selected" : ""
+                          }`}
+                      >
+                        # {area.name}
+                      </Button>
+                  ))}
+                </div>
+              </ToggleSection>
+            </div>
+
+            {selectedAreaData && (
+                <div className="subarea">
+                  <ToggleSection
+                      title="세부 지역 선택"
+                      isopen={isSubAreaOpen}
+                      onToggle={() => setIsSubAreaOpen(!isSubAreaOpen)}
+                  >
+                    <div className="buttons">
+                      {selectedAreaData.subAreas.map((subArea) => (
+                          <Button
+                              key={subArea.code}
+                              onClick={() => handleSubAreaChange(subArea.code)}
+                              className={`subarea-button ${
+                                  filters.subAreaCode === subArea.code ? "selected" : ""
+                              }`}
+                          >
+                            # {subArea.name}
+                          </Button>
+                      ))}
+                    </div>
+                  </ToggleSection>
+                </div>
+            )}
+          </SelectSearchItem>
+          <ItemList>
+            <div className="totalCount">
+              총{" "}
+              {totalElements > 9999 ? "9,999+" : totalElements.toLocaleString()}건
+              <Button onClick={() => clickCreateDiary()}>여행일지 작성</Button>
+            </div>
+            <SelectedFilters
+                filters={{
+                  areaCode: filters.areaCode,
+                  subAreaCode: filters.subAreaCode,
+                  searchQuery: filters.searchQuery,
+                  sortBy: filters.sortBy,
+                  minPrice: filters.minPrice,
+                  maxPrice: filters.maxPrice,
+                }}
+                onRemoveFilter={handleTopFilterChange}
             />
-          ))}
-          <Paginating
-            currentPage={currentPage}
-            totalPages={totalPages}
-            handlePageChange={handlePageChange}
-          />
-        </ItemList>
-        {loading && (
-          <Loading istransparent={"true"}>
-            <p>목록을 불러오는 중 입니다.</p>
-          </Loading>
-        )}
-      </List>
-    </>
+            {diaries.map((diary, index) => (
+                <DiaryItem
+                    key={index}
+                    id={diary.diaryId}
+                    thumbnail={diary.thumbnail}
+                    profile={diary.writerImg}
+                    description={[
+                      diary.title,
+                      diary.contentSummary,
+                      diary.writer,
+                      diary.createdAt.slice(0, 10).replaceAll("-", ". "),
+                      new Date(diary.createdAt).toLocaleString(),
+                      `${diary.writer} (${new Date(
+                          diary.createdAt
+                      ).toLocaleString()})`,
+                      diary.startDate.slice(0, 10).replaceAll("-", ". "),
+                      diary.endDate.slice(0, 10).replaceAll("-", ". "),
+                    ]}
+                />
+            ))}
+            <Paginating
+                currentPage={currentPage}
+                totalPages={totalPages}
+                handlePageChange={handlePageChange}
+            />
+          </ItemList>
+          {needLoginModal && (
+              <CheckModal
+                  isOpen={needLoginModal}
+                  onClose={() => setNeedLoginModal(false)}
+              >
+                <p>로그인이 필요한 서비스입니다.</p>
+              </CheckModal>
+          )}
+          {loading && (
+              <Loading istransparent={"true"}>
+                <p>목록을 불러오는 중 입니다.</p>
+              </Loading>
+          )}
+        </List>
+      </>
   );
 };

@@ -24,8 +24,6 @@ import java.util.Map;
 public class AdminController {
     private final AdminService adminService;
     private final ReportService reportService;
-    private final DiaryService diaryService;
-    private final ReviewService reviewService;
 
     // 멤버 조회
     @GetMapping("/member-list")

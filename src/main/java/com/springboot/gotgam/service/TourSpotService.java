@@ -83,7 +83,7 @@ public class TourSpotService {
         long startTime = System.currentTimeMillis();
         String cacheKey = "tourspot:detail:" + tourSpotId;
 
-        // 1. 캐시 확인 (통계 데이터 제외)
+        // 1. 캐시 확인
         TourSpotDetailDto cached = tourSpotDetailRedisTemplate.opsForValue().get(cacheKey);
         if (cached != null) {
             // 실시간 통계 데이터 추가
@@ -139,7 +139,7 @@ public class TourSpotService {
                 detailDto.setMapX(tourSpot.getMapX());
                 detailDto.setMapY(tourSpot.getMapY());
                 detailDto.setNearSpots(findNearestTourSpots(tourSpot.getLocation(), tourSpot.getContentId()));
-                // 실시간 통계 데이터 추가
+                // 통계 데이터 추가
                 TourSpotStats stats = fetchStats(tourSpotId);
                 detailDto.setBookmarkCount(stats.getBookmarkCount());
                 // Redis 캐시 저장 (통계 데이터 포함하지 않음)

@@ -1,0 +1,11 @@
+dependencies {
+    // Database
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+    
+    // AWS
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    
+    // Jsoup
+    implementation 'org.jsoup:jsoup:1.14.3'
+}

@@ -90,7 +90,7 @@ public class TourSpotService {
             TourSpotStats stats = fetchStats(tourSpotId);
             cached.setBookmarkCount(stats.getBookmarkCount());
             long endTime = System.currentTimeMillis();
-            log.info("캐시 히트 후 통계 반영: {} ms", endTime - startTime);
+            //log.info("캐시 히트 후 통계 반영: {} ms", endTime - startTime);
             return cached;
         }
 
@@ -109,7 +109,7 @@ public class TourSpotService {
             TourSpotStats stats = fetchStats(tourSpotId);
             result.setBookmarkCount(stats.getBookmarkCount());
             long endTime = System.currentTimeMillis();
-            log.info("이미 존재함, 통계 반영: {} ms", endTime - startTime);
+            //log.info("이미 존재함, 통계 반영: {} ms", endTime - startTime);
             return result;
         }
 
@@ -127,7 +127,7 @@ public class TourSpotService {
                     TourSpotStats stats = fetchStats(tourSpotId);
                     recheckCached.setBookmarkCount(stats.getBookmarkCount());
                     long endTime = System.currentTimeMillis();
-                    log.info("락 내에서 캐시 재확인 후 통계 반영: {} ms", endTime - startTime);
+                    //log.info("락 내에서 캐시 재확인 후 통계 반영: {} ms", endTime - startTime);
                     return recheckCached;
                 }
 
@@ -145,7 +145,7 @@ public class TourSpotService {
                 // Redis 캐시 저장 (통계 데이터 포함하지 않음)
                 tourSpotDetailRedisTemplate.opsForValue().set(cacheKey, detailDto, 5, TimeUnit.SECONDS);
                 long endTime = System.currentTimeMillis();
-                log.info("API 호출 후 통계 반영 및 반환: {} ms", endTime - startTime);
+                //log.info("API 호출 후 통계 반영 및 반환: {} ms", endTime - startTime);
                 return detailDto;
             } catch (Exception e) {
                 throw new RuntimeException("상세 정보를 가져오지 못했습니다.");
@@ -203,7 +203,7 @@ public class TourSpotService {
     @SuppressWarnings("unchecked")
     private <T> T fetchApiData(String url, String logLabel, boolean isSingleItem) {
         try {
-            log.info("호출 URL ({}): {}", logLabel, url);
+            //log.info("호출 URL ({}): {}", logLabel, url);
             URL urlObj = new URL(url);
             HttpURLConnection conn = (HttpURLConnection) urlObj.openConnection();
             conn.setRequestMethod("GET");
@@ -217,7 +217,7 @@ public class TourSpotService {
                     responseBody.append(line);
                 }
             }
-            log.info("응답 상태 ({}): {}", logLabel, conn.getResponseCode());
+            //log.info("응답 상태 ({}): {}", logLabel, conn.getResponseCode());
 
             ObjectMapper mapper = new ObjectMapper();
             Map<String, Object> response = mapper.readValue(responseBody.toString(), new TypeReference<Map<String, Object>>() {});
@@ -243,7 +243,7 @@ public class TourSpotService {
                 )))
                 .build();
         elasticsearchOperations.update(updateQuery, IndexCoordinates.of(INDEX_NAME));
-        log.info("관광지 {} 상세 정보 저장 완료", spotId);
+        //log.info("관광지 {} 상세 정보 저장 완료", spotId);
     }
 
     @SuppressWarnings("unchecked")

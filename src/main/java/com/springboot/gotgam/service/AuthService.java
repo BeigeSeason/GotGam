@@ -61,10 +61,12 @@ public class AuthService {
                     .orElseThrow(() -> new NotMemberException(HttpStatus.UNAUTHORIZED, "회원가입이 필요합니다."));
 
             UsernamePasswordAuthenticationToken authenticationToken = memberReqDto.toAuthentication();
+
             // authenticate() 내부에서 loadUserByUsername()가 실행되어 가입한 회원인지 확인하는 로직 존재함
             Authentication authentication = authenticationManager.authenticate(authenticationToken);
             TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
             String newRefreshToken = tokenDto.getRefreshToken();
+
             RefreshToken refreshToken = refreshTokenRepository.findByMember_UserId(memberReqDto.getUserId())
                     .orElse(null);
             if (refreshToken == null) {

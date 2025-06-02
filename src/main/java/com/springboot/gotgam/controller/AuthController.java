@@ -29,7 +29,7 @@ public class AuthController {
     }
 
     // 토큰 재발급
-    @PostMapping("/token-refreshing")
+    @PostMapping("/token/refresh")
     public ResponseEntity<String> refreshingAccessToken(@RequestBody String refreshToken) {
         return ResponseEntity.ok(authService.refreshAccessToken(refreshToken));
     }
@@ -41,7 +41,7 @@ public class AuthController {
     }
 
     // 회원탈퇴
-    @DeleteMapping("/sign-out")
+    @DeleteMapping("/signout")
     public ResponseEntity<Boolean> signOut(@RequestBody MemberReqDto memberReqDto) {
         return new ResponseEntity<>(authService.deleteMember(memberReqDto), HttpStatus.OK);
     }

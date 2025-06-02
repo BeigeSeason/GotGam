@@ -23,7 +23,7 @@ public class SearchController {
     private final SearchService searchService;
     private final TourSpotService tourSpotService;
 
-    @GetMapping("/diary-list")
+    @GetMapping("/diaries")
     public ResponseEntity<Page<DiarySearchListDto>> getDiaryList(@RequestParam(defaultValue = "0") int page,
                                                                  @RequestParam(defaultValue = "20") int size,
                                                                  @RequestParam(required = false) String keyword,
@@ -35,7 +35,7 @@ public class SearchController {
         return new ResponseEntity<>(searchService.diarySearch(page, size, keyword, sort, minPrice, maxPrice, areaCode, sigunguCode), HttpStatus.OK);
     }
 
-    @GetMapping("/tour-list")
+    @GetMapping("/tours")
     public ResponseEntity<Page<TourSpotListDto>> findTourSpotList(@RequestParam(defaultValue = "0") int page,
                                                                   @RequestParam(defaultValue = "20") int size,
                                                                   @RequestParam(required = false) String sort,
@@ -46,37 +46,37 @@ public class SearchController {
         return new ResponseEntity<>(searchService.searchTourSpots(page, size, sort, keyword, areaCode, sigunguCode, contentTypeId), HttpStatus.OK);
     }
 
-    @GetMapping("/spot-detail")
+    @GetMapping("/spot")
     public ResponseEntity<TourSpotDetailDto> getTourSpotDetail(@RequestParam String tourSpotId) {
         return new ResponseEntity<>(tourSpotService.getTourSpotDetail(tourSpotId), HttpStatus.OK);
     }
 
     // 추천 사용 시 보여줄 썸네일과 여행지
-    @PostMapping("/recommend-spot")
+    @PostMapping("/recommend")
     public ResponseEntity<Map<String, List<TourSpotListDto>>> getRecommendTourSpot(@RequestBody List<String> keyword) {
         return new ResponseEntity<>(searchService.get10SpotsRecommend(keyword), HttpStatus.OK);
     }
 
     // 나의 다이어리 목록 조회(비공개 포함)
-    @GetMapping("/my-diary-list")
+    @GetMapping("/user/diary")
     public ResponseEntity<Page<DiarySearchListDto>> getMyDiaryList(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size, @RequestParam String userId) {
         return ResponseEntity.ok(searchService.getMyDiaryList(userId, page, size));
     }
 
     // 다른 유저 다이어리 목록 조회(비공개 미포함)
-    @GetMapping("/otheruser-diary-list")
+    @GetMapping("/otheruser/diaries")
     public ResponseEntity<Page<DiarySearchListDto>> getOtherUserDiaryList(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size, @RequestParam String userId) {
         return ResponseEntity.ok(searchService.getOtherUserDiaryList(userId, page, size));
     }
 
     // 내가 북마크한 다이어리 목록 조회
-    @GetMapping("/my-bookmarked-diaries")
+    @GetMapping("/bookmark/diaries")
     public ResponseEntity<Page<DiarySearchListDto>> getBookmarkedDiaries(@RequestParam String userId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
         return ResponseEntity.ok(searchService.getBookmarkedDiaries(userId, page, size));
     }
 
     // 내가 북마크한 관광지 목록 조회
-    @GetMapping("/my-bookmarked-tourspots")
+    @GetMapping("/bookmark/tourspots")
     public ResponseEntity<Page<TourSpotListDto>> getBookmarkedTourSpots(@RequestParam String userId, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) {
         return ResponseEntity.ok(searchService.getBookmarkedTourSpots(userId, page, size));
     }

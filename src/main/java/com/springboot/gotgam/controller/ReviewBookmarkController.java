@@ -22,25 +22,26 @@ public class ReviewBookmarkController {
 
 
     // 리뷰 작성
-    @PostMapping("/add-review")
+    @PostMapping("/reviews")
     public ResponseEntity<Void> addReviewRedis(@RequestBody ReviewReqDto reviewReqDto) {
         reviewService.addReviewAsync(reviewReqDto);
         return ResponseEntity.ok().build();
     }
 
     // 리뷰 수정
-    @PostMapping("/edit-review")
+    @PutMapping("/review")
     public ResponseEntity<Void> editReviewRedis(@RequestBody ReviewReqDto reviewReqDto) {
         reviewService.editReviewAsync(reviewReqDto);
         return ResponseEntity.ok().build();
     }
 
     // 리뷰 삭제
-    @PostMapping("/delete-review-redis")
-    public ResponseEntity<Void> deleteReviewRedis(@RequestParam Long reviewId) {
+    @DeleteMapping("/reviews/{reviewId}")
+    public ResponseEntity<Void> deleteReview(@PathVariable Long reviewId) {
         reviewService.deleteReviewAsync(reviewId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
+
 
     // 북마크 추가
     @PostMapping("/add-bookmark")

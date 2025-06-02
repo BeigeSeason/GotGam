@@ -19,7 +19,7 @@ export const ItemApi = {
   ): Promise<TourSpotResponse> => {
     try {
       const response = await axios.get<TourSpotResponse>(
-        `${API_BASE_URL}/search/tour-list`,
+        `${API_BASE_URL}/search/tours`,
         {
           params: filters,
         }
@@ -33,7 +33,7 @@ export const ItemApi = {
   getTourSpotDetail: async (tourSpotId: string): Promise<TourSpotDetailDto> => {
     try {
       const response = await axios.get<TourSpotDetailDto>(
-        `${API_BASE_URL}/search/spot-detail`,
+        `${API_BASE_URL}/search/spot`,
         {
           params: { tourSpotId }, // 'tourSpotId'로 전달
         }
@@ -49,7 +49,7 @@ export const ItemApi = {
   ): Promise<DiaryResponse> => {
     try {
       const response = await axios.get<DiaryResponse>(
-        `${API_BASE_URL}/search/diary-list`,
+        `${API_BASE_URL}/search/diaries`,
         {
           params: filters,
         }
@@ -63,7 +63,7 @@ export const ItemApi = {
   // 특정 유저 다이어리 목록 조회
   getMyDiaryList: async (params: UserDiary): Promise<DiaryResponse> => {
     return (
-      await axios.get<DiaryResponse>(`${API_BASE_URL}/search/my-diary-list`, {
+      await axios.get<DiaryResponse>(`${API_BASE_URL}/search/user/diary`, {
         params,
       })
     ).data;
@@ -72,7 +72,7 @@ export const ItemApi = {
     console.log("params : ", params);
     return (
       await axios.get<DiaryResponse>(
-        `${API_BASE_URL}/search/otheruser-diary-list`,
+        `${API_BASE_URL}/search/otheruser/diaries`,
         {
           params,
         }
@@ -123,7 +123,7 @@ export const ItemApi = {
     try {
       return (
         await JwtAxios.get(
-          `${API_BASE_URL}/search/my-bookmarked-diaries?userId=${params.userId}&page=${params.page}&size=${params.size}`
+          `${API_BASE_URL}/search/bookmark/diaries?userId=${params.userId}&page=${params.page}&size=${params.size}`
         )
       ).data;
     } catch (error) {
@@ -137,14 +137,14 @@ export const ItemApi = {
     console.log(
       (
         await JwtAxios.get(
-          `${API_BASE_URL}/search/my-bookmarked-tourspots?userId=${params.userId}&page=${params.page}&size=${params.size}`
+          `${API_BASE_URL}/search/bookmark/tourspots?userId=${params.userId}&page=${params.page}&size=${params.size}`
         )
       ).data
     );
     try {
       return (
         await JwtAxios.get(
-          `${API_BASE_URL}/search/my-bookmarked-tourspots?userId=${params.userId}&page=${params.page}&size=${params.size}`
+          `${API_BASE_URL}/search/bookmark/tourspots?userId=${params.userId}&page=${params.page}&size=${params.size}`
         )
       ).data;
     } catch (error) {
@@ -156,7 +156,7 @@ export const ItemApi = {
   postReview: async (data: Review) => {
     try {
       return await JwtAxios.post(
-        `${API_BASE_URL}/review-bookmark/add-review`,
+        `${API_BASE_URL}/reviews`,
         data
       );
     } catch (error) {
@@ -167,8 +167,8 @@ export const ItemApi = {
   // 리뷰 수정
   editReview: async (data: Review) => {
     try {
-      return await JwtAxios.post(
-        `${API_BASE_URL}/review-bookmark/edit-review`,
+      return await JwtAxios.put(
+        `${API_BASE_URL}/review`,
         data
       );
     } catch (error) {
@@ -179,10 +179,8 @@ export const ItemApi = {
   // 리뷰 삭제
   deleteReview: async (id: number) => {
     try {
-      return await JwtAxios.post(
-        `${API_BASE_URL}/review-bookmark/delete-review-redis`,
-        null,
-        { params: { reviewId: id } }
+      return await JwtAxios.delete(
+        `${API_BASE_URL}/reviews/${id}`
       );
     } catch (error) {
       console.log("댓글 삭제 실패");

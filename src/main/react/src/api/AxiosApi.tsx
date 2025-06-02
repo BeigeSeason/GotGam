@@ -183,7 +183,7 @@ const AxiosApi = {
       userId: userId,
     };
     try {
-      return (await JwtAxios.delete(`/auth/sign-out`, { data })).data;
+      return (await JwtAxios.delete(`/auth/signout`, { data })).data;
     } catch (error) {
       console.log("회원탈퇴 중 오류 발생");
       return false;
@@ -321,7 +321,7 @@ const AxiosApi = {
   recommendResult: async (keyword: string[]) => {
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/search/recommend-spot`,
+        `${API_BASE_URL}/search/recommend`,
         keyword
       );
 

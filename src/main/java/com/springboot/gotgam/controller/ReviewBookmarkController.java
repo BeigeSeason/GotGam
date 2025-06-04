@@ -44,7 +44,7 @@ public class ReviewBookmarkController {
 
 
     // 북마크 추가
-    @PostMapping("/add-bookmark")
+    @PostMapping("/bookmarks/add")
     public ResponseEntity<Boolean> addBookmark(@RequestParam String targetId,
                                                @RequestParam String userId,
                                                @RequestParam String type) {
@@ -53,32 +53,34 @@ public class ReviewBookmarkController {
     }
 
     // 북마크 삭제
-    @PostMapping("/delete-bookmark")
-    public ResponseEntity<Void> deleteBookmark(@RequestParam String targetId, @RequestParam String userId) {
+    @PostMapping("/users/{userId}/bookmarks/{targetId}")
+    public ResponseEntity<Void> deleteBookmark(@PathVariable String userId,
+                                               @PathVariable String targetId) {
         bookmarkService.deleteBookmarkAsync(targetId, userId);
         return ResponseEntity.ok().build();
     }
 
     // 내가 북마크 여부 조회
-    @GetMapping("/my-bookmark")
-    public ResponseEntity<Boolean> isBookmarked(@RequestParam String targetId, @RequestParam String userId) {
+    @GetMapping("/users/{userId}/bookmarks/{targetId}")
+    public ResponseEntity<Boolean> isBookmarked(@PathVariable String userId,
+                                                @PathVariable String targetId) {
         return ResponseEntity.ok(bookmarkService.isBookmarked(targetId, userId));
     }
 
 
-    // 리뷰 조회
-    @GetMapping("/review-list")
+    // 특정 관광지 리뷰 조회
+    @GetMapping("/tourspots/{tourSpotId}/reviews")
     public ResponseEntity<Page<ReviewResDto>> getReviews(@RequestParam int page,
                                                          @RequestParam int size,
-                                                         @RequestParam String tourSpotId) {
+                                                         @PathVariable String tourSpotId) {
         return new ResponseEntity<>(reviewService.getReviews(page, size, tourSpotId), HttpStatus.OK);
     }
 
     // 내가 작성한 리뷰 조회
-    @GetMapping("/my-review-list")
-    public ResponseEntity<Page<ReviewResDto>> getMyReviews(@RequestParam int page,
-                                                           @RequestParam int size,
-                                                           @RequestParam String userId) {
+    @GetMapping("/users/{userId}/reviews")
+    public ResponseEntity<Page<ReviewResDto>> getMyReviews(@PathVariable String userId,
+                                                           @RequestParam int page,
+                                                           @RequestParam int size) {
         return new ResponseEntity<>(reviewService.getMyReviews(page, size, userId), HttpStatus.OK);
     }
 }

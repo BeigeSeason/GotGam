@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_BASE_URL } from "../util/Common";
+import {API_BASE_URL} from "../util/Common";
 import {
   TourSpotApiFilters,
   TourSpotResponse,
@@ -10,7 +10,7 @@ import {
   BookmarkData,
   BookmarkedItem,
 } from "../types/ItemTypes";
-import { Review, ReviewReq, ReviewPageResponse } from "../types/CommonTypes";
+import {Review, ReviewReq, ReviewPageResponse} from "../types/CommonTypes";
 import JwtAxios from "./JwtAxios";
 
 export const ItemApi = {
@@ -35,7 +35,7 @@ export const ItemApi = {
       const response = await axios.get<TourSpotDetailDto>(
         `${API_BASE_URL}/search/spot`,
         {
-          params: { tourSpotId }, // 'tourSpotId'로 전달
+          params: {tourSpotId}, // 'tourSpotId'로 전달
         }
       );
       return response.data;
@@ -85,7 +85,7 @@ export const ItemApi = {
     try {
       return (
         await JwtAxios.post(
-          `${API_BASE_URL}/review-bookmark/add-bookmark?targetId=${data.targetId}&userId=${data.userId}&type=${data.type}`
+          `${API_BASE_URL}/bookmarks/add?targetId=${data.targetId}&userId=${data.userId}&type=${data.type}`
         )
       ).data;
     } catch (error) {
@@ -97,7 +97,7 @@ export const ItemApi = {
     try {
       return (
         await JwtAxios.post(
-          `${API_BASE_URL}/review-bookmark/delete-bookmark?targetId=${data.targetId}&userId=${data.userId}`
+          `${API_BASE_URL}/users/${data.userId}/bookmarks/${data.targetId}`
         )
       ).data;
     } catch (error) {
@@ -109,7 +109,7 @@ export const ItemApi = {
     try {
       return (
         await JwtAxios.get(
-          `${API_BASE_URL}/review-bookmark/my-bookmark?targetId=${data.targetId}&userId=${data.userId}`
+          `${API_BASE_URL}/users/${data.userId}/bookmarks/${data.targetId}`
         )
       ).data;
     } catch (error) {
@@ -191,9 +191,9 @@ export const ItemApi = {
   reviewList: async (page = 0, size = 10, tourSpotId = "1") => {
     try {
       const response = await JwtAxios.get(
-        `${API_BASE_URL}/review-bookmark/review-list`,
+        `${API_BASE_URL}/tourspots/${tourSpotId}/reviews`,
         {
-          params: { page, size, tourSpotId },
+          params: {page, size},
         }
       );
       return response.data;
@@ -206,8 +206,13 @@ export const ItemApi = {
   myReviewList: async (params: ReviewReq): Promise<ReviewPageResponse> => {
     try {
       const response = await JwtAxios.get(
-        `${API_BASE_URL}/review-bookmark/my-review-list`,
-        { params }
+        `${API_BASE_URL}/users/${params.userId}/reviews`,
+        {
+          params: {
+            page: params.page,
+            size: params.size
+          }
+        }
       );
       return response.data;
     } catch (error) {

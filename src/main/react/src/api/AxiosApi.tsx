@@ -47,7 +47,7 @@ const AxiosApi = {
       // });
       // 토큰, 관리자 구현전까지 그냥 다이렉트 조회
       const response = await axios.get(
-        `${Common.FINAL_DOMAIN}/admin/member-list`,
+        `${Common.FINAL_DOMAIN}/admin/member/list`,
         {
           params: { page, size, searchType, searchValue, type, sort },
         }
@@ -72,7 +72,7 @@ const AxiosApi = {
       // });
       // 토큰, 관리자 구현전까지 그냥 다이렉트 조회
       const response = await axios.get(
-        `${Common.FINAL_DOMAIN}/admin/report-list`,
+        `${Common.FINAL_DOMAIN}/admin/report/list`,
         {
           params: { page, size, reportType, type, sort },
         }
@@ -95,7 +95,7 @@ const AxiosApi = {
   ) => {
     try {
       const response = await axios.post(
-        `${Common.FINAL_DOMAIN}/admin/report-manage`,
+        `${Common.FINAL_DOMAIN}/admin/report/management`,
         {
           reportId,
           state,
@@ -125,7 +125,7 @@ const AxiosApi = {
   banMember: async (id = 1, day = 0, reason = "") => {
     try {
       const response = await axios.post(
-        `${Common.FINAL_DOMAIN}/admin/member-ban`,
+        `${Common.FINAL_DOMAIN}/admin/ban`,
         { id, day, reason }
       );
       return response.data;

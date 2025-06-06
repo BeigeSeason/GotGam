@@ -26,7 +26,7 @@ public class AdminController {
     private final ReportService reportService;
 
     // 멤버 조회
-    @GetMapping("/member-list")
+    @GetMapping("/member/list")
     public ResponseEntity<Map<String, Object>> getAllMembers(@RequestParam(defaultValue = "0") int page,
                                                             @RequestParam(defaultValue = "10") int size,
                                                             @RequestParam(required = false) String searchType,
@@ -43,7 +43,7 @@ public class AdminController {
     }
 
     // 신고 조회
-    @GetMapping("/report-list")
+    @GetMapping("/report/list")
     public ResponseEntity<Map<String, Object>> getReports(@RequestParam(defaultValue = "0") int page,
                                                           @RequestParam(defaultValue = "10") int size,
                                                           @RequestParam(required = false) String reportType,
@@ -59,7 +59,7 @@ public class AdminController {
     }
 
     // 신고 관리
-    @PostMapping("/report-manage")
+    @PostMapping("/report/management")
     @Transactional
     public ResponseEntity<Boolean> reportManage(@RequestBody ReportManageReq request) {
             boolean isSuccess = adminService.reportProcess(request);
@@ -68,7 +68,7 @@ public class AdminController {
     }
 
     // 유저 정지
-    @PostMapping("/member-ban")
+    @PostMapping("/ban")
     public ResponseEntity<Boolean> banManage(@RequestBody BanReqDto request) {
         boolean isSuccess = adminService.memberBan(request.getId(), request.getDay(), request.getReason());
         return ResponseEntity.ok(isSuccess);

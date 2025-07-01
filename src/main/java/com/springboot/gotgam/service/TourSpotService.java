@@ -89,9 +89,11 @@ public class TourSpotService {
             // 실시간 통계 데이터 추가
             TourSpotStats stats = fetchStats(tourSpotId);
             cached.setBookmarkCount(stats.getBookmarkCount());
-            long endTime = System.currentTimeMillis();
+
+            // long endTime = System.currentTimeMillis();
             //log.info("캐시 히트 후 통계 반영: {} ms", endTime - startTime);
-            return cached;
+
+            return convertDetailImagesForProxy(cached); // 이미지 변환 적용
         }
 
         // 2. Elasticsearch 확인
@@ -108,9 +110,9 @@ public class TourSpotService {
             // 실시간 통계 데이터 추가
             TourSpotStats stats = fetchStats(tourSpotId);
             result.setBookmarkCount(stats.getBookmarkCount());
-            long endTime = System.currentTimeMillis();
+            //long endTime = System.currentTimeMillis();
             //log.info("이미 존재함, 통계 반영: {} ms", endTime - startTime);
-            return result;
+            return convertDetailImagesForProxy(result); // 이미지 변환 적용
         }
 
         if (retryCount > 10) {
@@ -144,9 +146,10 @@ public class TourSpotService {
                 detailDto.setBookmarkCount(stats.getBookmarkCount());
                 // Redis 캐시 저장 (통계 데이터 포함하지 않음)
                 tourSpotDetailRedisTemplate.opsForValue().set(cacheKey, detailDto, 5, TimeUnit.SECONDS);
-                long endTime = System.currentTimeMillis();
+
                 //log.info("API 호출 후 통계 반영 및 반환: {} ms", endTime - startTime);
-                return detailDto;
+
+                return convertDetailImagesForProxy(detailDto);
             } catch (Exception e) {
                 throw new RuntimeException("상세 정보를 가져오지 못했습니다.");
             } finally {
@@ -331,4 +334,60 @@ public class TourSpotService {
                 .thumbnail(tourSpot.getFirstImage())
                 .build();
     }
+
+    // 이미지 프록시 변환 유틸리티 메서드
+    private String convertToProxyUrl(String imageUrl) {
+        if (imageUrl != null && imageUrl.contains("tong.visitkorea.or.kr")) {
+            try {
+                String encodedUrl = java.net.URLEncoder.encode(imageUrl, java.nio.charset.StandardCharsets.UTF_8);
+                return "/api/image-proxy?url=" + encodedUrl;
+            } catch (Exception e) {
+                log.warn("이미지 URL 인코딩 실패: {}", imageUrl, e);
+                return imageUrl; // 실패시 원본 URL 반환
+            }
+        }
+        return imageUrl;
+    }
+
+    // 이미지 리스트 변환 메서드
+    private List<String> convertImageListToProxyUrls(List<String> imageUrls) {
+        if (imageUrls == null) {
+            return null;
+        }
+        return imageUrls.stream()
+                .map(this::convertToProxyUrl)
+                .collect(Collectors.toList());
+    }
+
+    // TourSpotDetailDto 이미지 변환 메서드
+    private TourSpotDetailDto convertDetailImagesForProxy(TourSpotDetailDto dto) {
+        if (dto == null) return dto;
+
+        // 이미지 리스트 변환
+        if (dto.getImages() != null) {
+            dto.setImages(convertImageListToProxyUrls(dto.getImages()));
+        }
+
+        // 근처 관광지 썸네일 변환
+        if (dto.getNearSpots() != null) {
+            dto.setNearSpots(dto.getNearSpots().stream()
+                    .map(this::convertListDtoImagesForProxy)
+                    .collect(Collectors.toList()));
+        }
+
+        return dto;
+    }
+
+    // TourSpotListDto 이미지 변환 메서드
+    private TourSpotListDto convertListDtoImagesForProxy(TourSpotListDto dto) {
+        if (dto == null) return dto;
+
+        // 썸네일 변환
+        dto.setThumbnail(convertToProxyUrl(dto.getThumbnail()));
+
+        return dto;
+    }
+
+
+
 }

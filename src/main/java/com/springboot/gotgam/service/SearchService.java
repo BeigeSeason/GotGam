@@ -217,6 +217,7 @@ public class SearchService {
         List<TourSpotListDto> dtoList = searchHits.getSearchHits().stream()
                 .map(SearchHit::getContent)
                 .map(TourSpots::convertToListDto)
+                .map(this::convertListDtoImagesForProxy) // 이미지 변환 적용
                 .collect(Collectors.toList());
                 
         return new PageImpl<>(dtoList, pageable, searchHits.getTotalHits());
@@ -367,6 +368,7 @@ public class SearchService {
         List<TourSpotListDto> dtoList = searchHits.getSearchHits().stream()
                 .map(SearchHit::getContent)
                 .map(TourSpots::convertToListDto)
+                .map(this::convertListDtoImagesForProxy) // 이미지 변환 적용
                 .collect(Collectors.toList());
                 
         return new PageImpl<>(dtoList, pageable, searchHits.getTotalHits());
@@ -411,6 +413,7 @@ public class SearchService {
         return searchHits.getSearchHits().stream()
                 .map(SearchHit::getContent)
                 .map(TourSpots::convertToSimpleDto)
+                .map(this::convertListDtoImagesForProxy) // 이미지 변환 적용
                 .collect(Collectors.toList());
     }
     
@@ -585,4 +588,29 @@ public class SearchService {
             return null;
         }
     }
+
+    // 이미지 프록시 변환 유틸리티 메서드
+    private String convertToProxyUrl(String imageUrl) {
+        if (imageUrl != null && imageUrl.contains("tong.visitkorea.or.kr")) {
+            try {
+                String encodedUrl = java.net.URLEncoder.encode(imageUrl, java.nio.charset.StandardCharsets.UTF_8);
+                return "/api/image-proxy?url=" + encodedUrl;
+            } catch (Exception e) {
+                log.warn("이미지 URL 인코딩 실패: {}", imageUrl, e);
+                return imageUrl; // 실패시 원본 URL 반환
+            }
+        }
+        return imageUrl;
+    }
+
+    // TourSpotListDto 이미지 변환 메서드
+    private TourSpotListDto convertListDtoImagesForProxy(TourSpotListDto dto) {
+        if (dto == null) return dto;
+
+        // 썸네일 변환
+        dto.setThumbnail(convertToProxyUrl(dto.getThumbnail()));
+
+        return dto;
+    }
+
 }

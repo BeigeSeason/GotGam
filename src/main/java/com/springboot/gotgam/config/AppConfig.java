@@ -6,11 +6,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.springboot.gotgam.dto.tourspot.TourSpotDetailDto;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -20,11 +22,18 @@ import java.util.Collections;
 @Configuration
 public class AppConfig {
     @Bean
+    @Primary
     public RestTemplate restTemplate() {
         RestTemplate restTemplate = new RestTemplate();
         restTemplate.getInterceptors().add((request, body, execution) -> {
             request.getHeaders().set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36");
-            request.getHeaders().setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+            // Accept 헤더가 이미 설정되어 있지 않은 경우에만 JSON Accept 설정
+            if (!request.getHeaders().containsKey("Accept")) {
+                request.getHeaders().setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+            }
+
+
             return execution.execute(request, body);
         });
         return restTemplate;

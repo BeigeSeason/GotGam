@@ -43,11 +43,18 @@ public class WebSecurityConfig implements WebMvcConfigurer {
                 .accessDeniedHandler(jwtAccessDeniedHandler)
                 .and()
                 .authorizeRequests()
+                // 🚨 이미지 프록시 경로를 가장 위에 배치 (더 구체적인 패턴)
+                .antMatchers(HttpMethod.GET, "/api/image-proxy").permitAll()
+                .antMatchers(HttpMethod.GET, "/api/image-proxy/**").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/api/image-proxy").permitAll()
+                .antMatchers(HttpMethod.OPTIONS, "/api/image-proxy/**").permitAll()
+                .antMatchers("/api/image-proxy").permitAll() // 쿼리 파라미터 포함
                 .antMatchers("/", "/static/**", "/auth/signup","/auth/login", "/diary/diary-detail/**",
-                        "/report/**", "/search/**","/review-bookmark/review-list", "/flask/**").permitAll()
+                        "/report/**", "/search/**","/flask/**",
+                        "/tourspots/*/reviews").permitAll()
                 .antMatchers("/diary/change-ispublic", "/diary/post-diary", "diary/edit-diary", "diary/delete",
                         "/auth/token-refreshing", "/auth/update", "/auth/sign-out",
-                        "/review-bookmark/**").authenticated()
+                        "/reviews/**", "/review", "/bookmarks/add", "/users/*/bookmarks/**", "/users/*/reviews").authenticated()
                 .antMatchers("/admin/**").hasRole("ADMIN")
                 .antMatchers("/v2/api-docs", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**", "/swagger/**", "/sign-api/exception", "/member/**").permitAll()
                 .antMatchers(HttpMethod.OPTIONS, "/**").permitAll()

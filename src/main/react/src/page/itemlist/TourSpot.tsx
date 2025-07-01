@@ -1,7 +1,6 @@
 import {useParams, Link} from "react-router-dom";
 import {ItemApi} from "../../api/ItemApi";
 import {TourSpotDetail} from "../../types/TourSpotTypes";
-import {Comment} from "html-react-parser";
 import React, {useEffect, useRef, useState} from "react";
 import {Swiper, SwiperSlide} from "swiper/react";
 import "swiper/css";
@@ -20,14 +19,12 @@ import {
 import basicImg from "../../img/item/type_200.png";
 import {Loading} from "../../component/Loading";
 import {Modal, CheckModal} from "../../component/ModalComponent";
-import {InputBox} from "../../component/InputComponent";
 import {Button} from "../../component/ButtonComponent";
 import {Paginating} from "../../component/PaginationComponent";
 import {FaBookmark, FaRegBookmark} from "react-icons/fa";
 import {useSelector} from "react-redux";
 import {RootState} from "../../redux/store";
 import {KakaoMapSpot} from "../../component/KakaoMapComponent";
-import AxiosApi from "../../api/AxiosApi";
 import {Review} from "../../types/CommonTypes";
 import {BookmarkData} from "../../types/ItemTypes";
 import {GoStarFill} from "react-icons/go";

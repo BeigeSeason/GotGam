@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/review-bookmark")
+@RequestMapping()
 @RequiredArgsConstructor
 public class ReviewBookmarkController {
     private final ReviewService reviewService;

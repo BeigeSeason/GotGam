@@ -108,7 +108,7 @@ export const ItemApi = {
   isBookmarked: async (data: BookmarkData): Promise<boolean> => {
     try {
       return (
-        await JwtAxios.get(
+        await axios.get(
           `${API_BASE_URL}/users/${data.userId}/bookmarks/${data.targetId}`
         )
       ).data;
@@ -190,7 +190,7 @@ export const ItemApi = {
   // 리뷰 리스트 조회
   reviewList: async (page = 0, size = 10, tourSpotId = "1") => {
     try {
-      const response = await JwtAxios.get(
+      const response = await axios.get(
         `${API_BASE_URL}/tourspots/${tourSpotId}/reviews`,
         {
           params: {page, size},
